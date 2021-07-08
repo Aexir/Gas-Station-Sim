@@ -29,7 +29,6 @@ namespace WinFormsApp1
             maxCashiers = (int)numericUpDown2.Value;
             maxCars = (int)numericUpDown3.Value;
 
-            Hide();
             Simulation s = new Simulation();
             s.ShowDialog();
         }

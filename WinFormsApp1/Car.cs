@@ -29,7 +29,10 @@ namespace WinFormsApp1
 
         public void carAction()
         {
-            spawnCar();
+            sim.Invoke(new Action(delegate ()
+            {
+                spawnCar();
+            }));
             mutex.WaitOne();
             if (nCars < maxCars)
             {
@@ -37,16 +40,25 @@ namespace WinFormsApp1
                 mutex.Release();
                 // moveToQueue();
                 Console.WriteLine("Wejszlo");
-                move(new Point(position.X, sim.Height));
+                move(enterance);
+                move(new Point(200, 300));
 
 
 
                 // moveToExit();
+                nCars--;
             }
             else
             {
-                move(new Point(position.X, sim.Height));
                 mutex.Release();
+                move(new Point(position.X, sim.Height));
+            }
+            if (fuelType == 0)
+            {
+                onCars--;
+            } else
+            {
+                pbCars--;
             }
             Thread.Sleep(rand.Next(1000, 2000));
             carAction();
@@ -59,20 +71,25 @@ namespace WinFormsApp1
 
         public void spawnCar()
         {
+            while (sim == null) {; }
             position = new Point(20, 0);
-            fuelType = rand.Next(1);
-            vehicle.Height = 50;
-            vehicle.Width = 25;
+            fuelType = rand.Next(2);
+            vehicle.Height = 25;
+            vehicle.Width = 50;
             if (fuelType == 0)
-            {
-                vehicle.Text = "ON";
-                vehicle.BackColor = Color.Yellow;
-            }
-            else
-            {
-                vehicle.Text = "PB";
-                vehicle.BackColor = Color.LightGreen;
-            }
+                {
+                    vehicle.Text = "ON";
+                    vehicle.BackColor = Color.Yellow;
+                onCars++;
+                    
+                }
+                else
+                {
+                    vehicle.Text = "PB";
+                    vehicle.BackColor = Color.LightGreen;
+                pbCars++;
+                }
+            
         }
 
         public void move(Point destination)
@@ -113,13 +130,16 @@ namespace WinFormsApp1
                     }
                 }
             }
-            return i;
         }
 
         public int getFreeCashier()
         {
             int i = 0;
-            bool exists;
+            bool exists = false;
+            while (!exists)
+            {
+
+            }
             return i;
         }
     }

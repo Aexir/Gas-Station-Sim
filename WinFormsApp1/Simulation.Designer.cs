@@ -32,8 +32,9 @@ namespace WinFormsApp1
             this.components = new System.ComponentModel.Container();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.resetPanel = new System.Windows.Forms.Panel();
-            this.btnStart = new System.Windows.Forms.Button();
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.btnReset = new System.Windows.Forms.Button();
+            this.btnStart = new System.Windows.Forms.Button();
             this.resetPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -43,6 +44,7 @@ namespace WinFormsApp1
             // 
             // resetPanel
             // 
+            this.resetPanel.Controls.Add(this.textBox1);
             this.resetPanel.Controls.Add(this.btnReset);
             this.resetPanel.Controls.Add(this.btnStart);
             this.resetPanel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -51,16 +53,13 @@ namespace WinFormsApp1
             this.resetPanel.Size = new System.Drawing.Size(884, 450);
             this.resetPanel.TabIndex = 17;
             // 
-            // btnStart
+            // textBox1
             // 
-            this.btnStart.Font = new System.Drawing.Font("Segoe UI Symbol", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.btnStart.Location = new System.Drawing.Point(797, 12);
-            this.btnStart.Name = "btnStart";
-            this.btnStart.Size = new System.Drawing.Size(75, 23);
-            this.btnStart.TabIndex = 0;
-            this.btnStart.Text = "Start";
-            this.btnStart.UseVisualStyleBackColor = true;
-          //  this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
+            this.textBox1.Location = new System.Drawing.Point(62, 14);
+            this.textBox1.Multiline = true;
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(121, 50);
+            this.textBox1.TabIndex = 2;
             // 
             // btnReset
             // 
@@ -71,7 +70,18 @@ namespace WinFormsApp1
             this.btnReset.TabIndex = 1;
             this.btnReset.Text = "Reset";
             this.btnReset.UseVisualStyleBackColor = true;
-            //this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
+            this.btnReset.Click += new System.EventHandler(this.btnReset_Click);
+            // 
+            // btnStart
+            // 
+            this.btnStart.Font = new System.Drawing.Font("Segoe UI Symbol", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            this.btnStart.Location = new System.Drawing.Point(797, 12);
+            this.btnStart.Name = "btnStart";
+            this.btnStart.Size = new System.Drawing.Size(75, 23);
+            this.btnStart.TabIndex = 0;
+            this.btnStart.Text = "Start";
+            this.btnStart.UseVisualStyleBackColor = true;
+            this.btnStart.Click += new System.EventHandler(this.btnStart_Click);
             // 
             // Simulation
             // 
@@ -82,6 +92,7 @@ namespace WinFormsApp1
             this.Name = "Simulation";
             this.Text = "Stacja Paliw";
             this.resetPanel.ResumeLayout(false);
+            this.resetPanel.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -92,5 +103,6 @@ namespace WinFormsApp1
         private System.Windows.Forms.Panel resetPanel;
         private System.Windows.Forms.Button btnReset;
         private System.Windows.Forms.Button btnStart;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }

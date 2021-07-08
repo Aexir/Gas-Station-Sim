@@ -26,6 +26,10 @@ namespace WinFormsApp1
 
         public static int nCars = 0; //current customers on station
 
+        public static int pbCars = 0;
+        public static int onCars = 0;
+
+
         //SEMAPHORES
         public static Semaphore stationEnterance = new Semaphore(1, 1);
         public static Semaphore mutex = new Semaphore(1, 1);

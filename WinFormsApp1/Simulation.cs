@@ -22,7 +22,33 @@ namespace WinFormsApp1
         public Simulation()
         {
             InitializeComponent();
+        }
 
+
+        private void InitializeData()
+        {
+            nCars = 0;
+            cars = new Car[maxCars];
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            for (int i = 0; i < maxCars; i++)
+            {
+                cars[i].vehicle.Location = cars[i].getPoint();
+            }
+            textBox1.Text = "PB = " + pbCars + "\nOn = " + onCars;
+        }
+
+        private void btnReset_Click(object sender, EventArgs e)
+        {
+            nCars = 0;
+            btnStart.Enabled = true;
+        }
+
+        private void btnStart_Click(object sender, EventArgs e)
+        {
+            btnStart.Enabled = false;
             InitializeData();
             carThreads = new Thread[maxCars];
 
@@ -43,21 +69,6 @@ namespace WinFormsApp1
             foreach (Thread thread in carThreads)
             {
                 thread.Start();
-            }
-        }
-
-
-        private void InitializeData()
-        {
-            nCars = 0;
-            cars = new Car[maxCars];
-        }
-
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-            for (int i = 0; i < maxCars; i++)
-            {
-                cars[i].vehicle.Location = cars[i].getPoint();
             }
         }
     }
