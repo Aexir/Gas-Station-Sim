@@ -25,12 +25,12 @@ namespace WinFormsApp1
 
             InitializeData();
             carThreads = new Thread[maxCars];
-   
+
             for (int i = 0; i < maxCars; i++)
             {
                 cars[i] = new Car(this, resetPanel);
             }
-           
+
             for (int i = 0; i < maxCars; i++)
             {
                 carThreads[i] = new Thread(new ThreadStart(cars[i].carAction));

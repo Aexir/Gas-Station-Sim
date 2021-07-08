@@ -46,6 +46,7 @@ namespace WinFormsApp1
             else
             {
                 move(new Point(position.X, sim.Height));
+                mutex.Release();
             }
             Thread.Sleep(rand.Next(1000, 2000));
             carAction();
@@ -76,7 +77,7 @@ namespace WinFormsApp1
 
         public void move(Point destination)
         {
-            while(position.Y > destination.Y)
+            while (position.Y > destination.Y)
             {
                 position.Y -= 1;
                 Thread.Sleep(1);
