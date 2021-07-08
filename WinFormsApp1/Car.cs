@@ -46,11 +46,22 @@ namespace WinFormsApp1
                 move(new Point(position.X + 50, position.Y)); //wjazd
                 //moveToEmptyDistributor()
                 //move(new Point(200, 300));
-                //moveToEmptyCash()
                 Point p = distLoc();
 
-                move(new Point(p.X, p.Y+10));
+                move(new Point(p.X, p.Y+15));
+                move(new Point(p.X+200, p.Y + 15));
+
+
+                //moveToEmptyCash()
+
+                Point x = cashLoc();
+                move(new Point(x.X, x.Y + 15));
+                move(new Point(x.X+150, x.Y + 15));
+
+
                 // moveToExit();
+
+                move(new Point(sim.Width));
                 nCars--;
             }
             else
@@ -169,6 +180,13 @@ namespace WinFormsApp1
             int i = rand.Next(0, maxDistributors);
             return distributorLocations[i];
         }
+        
+        public Point cashLoc()
+        {
+            int i = rand.Next(0, maxCashiers);
+            return cashLocations[i];
+        }
+
 
         public int getFreeCashier()
         {

@@ -58,7 +58,7 @@ namespace WinFormsApp1
             txt.TextAlign = HorizontalAlignment.Center;
             txt.Height = 50;
             txt.Width = 105;
-            txt.Location = new Point(distributorLocations[id].X, distributorLocations[id].Y - txt.Height - on.Height+10); ;
+            txt.Location = new Point(distributorLocations[id].X, distributorLocations[id].Y - txt.Height - on.Height + 10); ;
             //PB
             pbLbl.Text = "PB";
             pbLbl.BackColor = Color.LightGreen;
@@ -66,7 +66,7 @@ namespace WinFormsApp1
             pbLbl.TextAlign = ContentAlignment.MiddleCenter;
             pbLbl.Height = 25;
             pbLbl.Width = 50;
-            pbLbl.Location = new Point(distributorLocations[id].X, distributorLocations[id].Y - txt.Height - on.Height- pbLbl.Height+7);
+            pbLbl.Location = new Point(distributorLocations[id].X, distributorLocations[id].Y - txt.Height - on.Height - pbLbl.Height + 7);
             //ON
             onLBL.Text = "ON";
             onLBL.BackColor = Color.LightYellow;
@@ -74,9 +74,9 @@ namespace WinFormsApp1
             onLBL.TextAlign = ContentAlignment.MiddleCenter;
             onLBL.Height = 25;
             onLBL.Width = 50;
-            onLBL.Location = new Point(distributorLocations[id].X + pbLbl.Width + 5, distributorLocations[id].Y - txt.Height - on.Height - pbLbl.Height+7);
+            onLBL.Location = new Point(distributorLocations[id].X + pbLbl.Width + 5, distributorLocations[id].Y - txt.Height - on.Height - pbLbl.Height + 7);
             //TXT
-            dst.Text = "Dystrybutor nr " + (id+1);
+            dst.Text = "Dystrybutor nr " + (id + 1);
             dst.BackColor = Color.LightGray;
             dst.Font = new System.Drawing.Font("Segoe UI Symbol", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             dst.TextAlign = ContentAlignment.MiddleCenter;

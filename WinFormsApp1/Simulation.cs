@@ -17,9 +17,12 @@ namespace WinFormsApp1
     {
         public Car[] cars;
         public Distributor[] distributors;
-        
+        public Cash[] cashiers;
+
         public Thread[] carThreads;
         public Thread[] distributorThreads;
+        public Thread[] cashThreads;
+
         System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
 
 
@@ -32,15 +35,33 @@ namespace WinFormsApp1
         private void InitializeData()
         {
             nCars = 0;
+
+            cashLocations = new Point[maxCashiers];
+            distributorLocations = new Point[maxDistributors];
+            freeDistributors = new bool[maxDistributors];
+
+
             cars = new Car[maxCars+5];
             distributors = new Distributor[maxDistributors];
+            cashiers = new Cash[maxCashiers];
 
-
-            distributorLocations[0] = new Point(this.Width/3, this.Height-50);
-            distributorLocations[1] = new Point(this.Width/3, this.Height -200);
-            distributorLocations[2] = new Point(this.Width/3, this.Height-350);
-            distributorLocations[3] = new Point(this.Width / 3, this.Height -500);
-            distributorLocations[4] = new Point(this.Width / 3, this.Height - 650);
+            for (int i = 0; i < maxDistributors; i++)
+            {
+                if ( i== 0)distributorLocations[0] = new Point(this.Width / 3, this.Height - 50);
+                else
+                {
+                    distributorLocations[i] = new Point(this.Width / 3, this.Height - 50 - 150 * i);
+                }
+            }
+           
+            for (int i = 0; i < maxCashiers; i++)
+            {
+                if (i == 0) cashLocations[0] = new Point(this.Width/2 + 300, this.Height - 50);
+                else
+                {
+                    cashLocations[i] = new Point(this.Width/2 + 300, this.Height - 50 - 100 * i);
+                }
+            }
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -68,6 +89,11 @@ namespace WinFormsApp1
             {
                 distributors[i] = new Distributor(i, resetPanel);
             }
+            for (int i = 0; i < maxCashiers; i++)
+            {
+                cashiers[i] = new Cash(i, resetPanel);
+            }
+
 
             for (int i = 0; i < maxCars+5; i++)
             {

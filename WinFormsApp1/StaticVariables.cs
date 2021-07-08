@@ -38,8 +38,8 @@ namespace WinFormsApp1
 
         //INFO
         public static Point enterance = new Point(0, 900);
-        public static Point[] cashLocations = new Point[maxCashiers];
-        public static Point[] distributorLocations = new Point[maxDistributors];
-        public static bool[] freeDistributors = new bool[maxDistributors];
+        public static Point[] cashLocations;
+        public static Point[] distributorLocations;
+        public static bool[] freeDistributors;
     }
 }
