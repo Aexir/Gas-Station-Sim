@@ -33,19 +33,23 @@ namespace WinFormsApp1
             {
                 spawnCar();
             }));
-            mutex.WaitOne();
-            Thread.Sleep(rand.Next(1000, 2000));
+            Thread.Sleep(rand.Next(500, 2000));
 
+            mutex.WaitOne();
+            Thread.Sleep(300);
             if (nCars < maxCars)
             {
                 nCars++;
                 mutex.Release();
-                // moveToQueue();
-                Console.WriteLine("Wejszlo");
 
-                move(enterance);
-                move(new Point(200, 300));
+                move(new Point(position.X, sim.Height / 2)); //dojazd do bramy
+                move(new Point(position.X + 50, position.Y)); //wjazd
+                //moveToEmptyDistributor()
+                //move(new Point(200, 300));
+                //moveToEmptyCash()
+                Point p = distLoc();
 
+                move(new Point(p.X, p.Y+10));
                 // moveToExit();
                 nCars--;
             }
@@ -63,6 +67,7 @@ namespace WinFormsApp1
                 pbCars--;
             }
             carAction();
+
         }
 
         public Point getPoint()
@@ -75,14 +80,14 @@ namespace WinFormsApp1
             while (sim == null) {; }
             position = new Point(20, 0);
             fuelType = rand.Next(2);
-            vehicle.Height = 50;
-            vehicle.Width = 25;
+            vehicle.Height = 40;
+            vehicle.Width = 20;
+            vehicle.TextAlign = ContentAlignment.BottomLeft;
             if (fuelType == 0)
             {
                 vehicle.Text = "ON";
                 vehicle.BackColor = Color.Yellow;
                 onCars++;
-
             }
             else
             {
@@ -90,7 +95,6 @@ namespace WinFormsApp1
                 vehicle.BackColor = Color.LightGreen;
                 pbCars++;
             }
-
         }
 
         public void move(Point destination)
@@ -101,8 +105,8 @@ namespace WinFormsApp1
                 position.Y -= 1;
                 sim.Invoke(new Action(delegate ()
                 {
-                    vehicle.Height = 50;
-                    vehicle.Width = 25;
+                    vehicle.Height = 40;
+                    vehicle.Width = 20;
                 }));
                 Thread.Sleep(1);
             }
@@ -115,8 +119,8 @@ namespace WinFormsApp1
 
                 sim.Invoke(new Action(delegate ()
                 {
-                    vehicle.Height = 50;
-                    vehicle.Width = 25;
+                    vehicle.Height = 40;
+                    vehicle.Width = 20;
                 }));
                 Thread.Sleep(1);
             }
@@ -126,8 +130,8 @@ namespace WinFormsApp1
                 position.X += 1;
                 sim.Invoke(new Action(delegate ()
                 {
-                    vehicle.Height = 25;
-                    vehicle.Width = 50;
+                    vehicle.Height = 20;
+                    vehicle.Width = 40;
                 }));
                 Thread.Sleep(1);
             }
@@ -137,8 +141,8 @@ namespace WinFormsApp1
                 sim.Invoke(new Action(delegate ()
                 {
                     position.X -= 1;
-                    vehicle.Height = 25;
-                    vehicle.Width = 50;
+                    vehicle.Height = 20;
+                    vehicle.Width = 40;
                 }));
                 Thread.Sleep(1);
             }
@@ -158,6 +162,12 @@ namespace WinFormsApp1
                     }
                 }
             }
+        }
+
+        public Point distLoc()
+        {
+            int i = rand.Next(0, maxDistributors);
+            return distributorLocations[i];
         }
 
         public int getFreeCashier()

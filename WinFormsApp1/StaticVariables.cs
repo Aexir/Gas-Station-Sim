@@ -31,13 +31,15 @@ namespace WinFormsApp1
 
 
         //SEMAPHORES
+        public static Semaphore mutex = new Semaphore(1, 1); //zliczanie samochodow 
+
+
         public static Semaphore stationEnterance = new Semaphore(1, 1);
-        public static Semaphore mutex = new Semaphore(1, 1);
 
         //INFO
-        public static Point enterance = new Point(0, 400);
-        public static Point[] cashiers = new Point[maxCashiers];
-        public static Point[] distributor = new Point[maxDistributors];
+        public static Point enterance = new Point(0, 900);
+        public static Point[] cashLocations = new Point[maxCashiers];
+        public static Point[] distributorLocations = new Point[maxDistributors];
         public static bool[] freeDistributors = new bool[maxDistributors];
     }
 }
