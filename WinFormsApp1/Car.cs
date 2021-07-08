@@ -34,16 +34,17 @@ namespace WinFormsApp1
                 spawnCar();
             }));
             mutex.WaitOne();
+            Thread.Sleep(rand.Next(1000, 2000));
+
             if (nCars < maxCars)
             {
                 nCars++;
                 mutex.Release();
                 // moveToQueue();
                 Console.WriteLine("Wejszlo");
+
                 move(enterance);
                 move(new Point(200, 300));
-
-
 
                 // moveToExit();
                 nCars--;
@@ -56,11 +57,11 @@ namespace WinFormsApp1
             if (fuelType == 0)
             {
                 onCars--;
-            } else
+            }
+            else
             {
                 pbCars--;
             }
-            Thread.Sleep(rand.Next(1000, 2000));
             carAction();
         }
 
@@ -74,44 +75,71 @@ namespace WinFormsApp1
             while (sim == null) {; }
             position = new Point(20, 0);
             fuelType = rand.Next(2);
-            vehicle.Height = 25;
-            vehicle.Width = 50;
+            vehicle.Height = 50;
+            vehicle.Width = 25;
             if (fuelType == 0)
-                {
-                    vehicle.Text = "ON";
-                    vehicle.BackColor = Color.Yellow;
+            {
+                vehicle.Text = "ON";
+                vehicle.BackColor = Color.Yellow;
                 onCars++;
-                    
-                }
-                else
-                {
-                    vehicle.Text = "PB";
-                    vehicle.BackColor = Color.LightGreen;
+
+            }
+            else
+            {
+                vehicle.Text = "PB";
+                vehicle.BackColor = Color.LightGreen;
                 pbCars++;
-                }
-            
+            }
+
         }
 
         public void move(Point destination)
         {
+
             while (position.Y > destination.Y)
             {
                 position.Y -= 1;
+                sim.Invoke(new Action(delegate ()
+                {
+                    vehicle.Height = 50;
+                    vehicle.Width = 25;
+                }));
                 Thread.Sleep(1);
             }
+
+
+
             while (position.Y < destination.Y)
             {
                 position.Y += 1;
+
+                sim.Invoke(new Action(delegate ()
+                {
+                    vehicle.Height = 50;
+                    vehicle.Width = 25;
+                }));
                 Thread.Sleep(1);
             }
+
             while (position.X < destination.X)
             {
                 position.X += 1;
+                sim.Invoke(new Action(delegate ()
+                {
+                    vehicle.Height = 25;
+                    vehicle.Width = 50;
+                }));
                 Thread.Sleep(1);
             }
+
             while (position.X > destination.X)
             {
-                position.X -= 1;
+                sim.Invoke(new Action(delegate ()
+                {
+                    position.X -= 1;
+                    vehicle.Height = 25;
+                    vehicle.Width = 50;
+                }));
                 Thread.Sleep(1);
             }
         }

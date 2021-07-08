@@ -37,7 +37,7 @@ namespace WinFormsApp1
             {
                 cars[i].vehicle.Location = cars[i].getPoint();
             }
-            textBox1.Text = "PB = " + pbCars + "\nOn = " + onCars;
+            textBox1.Text = "PB = " + pbCars + Environment.NewLine + "On = " + onCars + Environment.NewLine + "Cars: " + nCars + "/" + maxCars;
         }
 
         private void btnReset_Click(object sender, EventArgs e)
