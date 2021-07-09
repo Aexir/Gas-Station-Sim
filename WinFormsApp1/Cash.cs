@@ -12,8 +12,7 @@ namespace WinFormsApp1
 {
     public class Cash
     {
-        private Point position;
-        Random rand = new Random();
+        private Random rand = new Random();
         private int id;
         public Label cashLbl = new Label();
         public TextBox txt = new TextBox();
@@ -47,11 +46,11 @@ namespace WinFormsApp1
                 {
                     pbCars--;
                 }
-                //panel.Invoke(new Action(delegate ()
-                // {
-                //     txt.Text = "OTWARTE";
-                //  }));
-                //distributors[cashDistribId[id]].reset();
+                panel.Invoke(new Action(delegate ()
+                 {
+                     txt.Text = "OTWARTE";
+                  }));
+                distributors[cashDistribId[id]].reset();
 
 
                 //if (station)

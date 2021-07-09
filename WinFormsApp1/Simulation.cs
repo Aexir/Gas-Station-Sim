@@ -25,7 +25,6 @@ namespace WinFormsApp1
             InitializeComponent();
         }
 
-
         private void InitializeData()
         {
             nCars = 0;
