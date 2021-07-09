@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using static WinFormsApp1.StaticVariables;
@@ -37,6 +38,8 @@ namespace WinFormsApp1
             pbTank = 1000;
             inUse = false;
 
+
+            freeDistributors[id] = true;
 
             position = distributorLocations[id];
 
@@ -95,10 +98,43 @@ namespace WinFormsApp1
             resetPanel.Controls.Add(pb);
         }
 
-        public void createDistributor()
+        public void distributorAction()
         {
+            while (true)
+            {
 
+
+                dstSem[id].WaitOne();
+
+                int xd = distribCarId[id];
+
+                int tankSize = Simulation.cars[xd].getTankSize();
+
+                for (int i = 0; i < tankSize; i++)
+                {
+                    if (Simulation.cars[xd].getFuelType() == 0) //ON
+                    {
+                        panel.Invoke(new Action(delegate ()
+                        {
+                            on.Value -= 1;
+                        }));
+
+                    }
+                    else //PB
+                    {
+                        panel.Invoke(new Action(delegate ()
+                        {
+                            pb.Value -= 1;
+                        }));
+                    }
+                    Thread.Sleep(rand.Next(tankSize));
+                }
+
+                carSem[xd].Release();
+                freeDistributors[id] = true;
+            }
         }
+
 
         public Point getLocation()
         {

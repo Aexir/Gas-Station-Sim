@@ -19,16 +19,19 @@ namespace WinFormsApp1
         Panel panel = new Panel();
         private bool inUse;
 
+        public void cashierAction()
+        {
 
+        }
 
         public Cash(int id, Panel resetPanel)
         {
             this.id = id;
             this.panel = resetPanel;
-
+            freeCashiers[id] = true;
             inUse = false;
 
-
+            
          //   cashLbl.Location = cashLocations[id];
             txt.Location = cashLocations[id];
             cashLbl.Location = new Point(cashLocations[id].X, cashLocations[id].Y - 25);

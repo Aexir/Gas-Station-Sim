@@ -12,20 +12,29 @@ namespace WinFormsApp1
         private Point position;
         public Label vehicle = new Label();
         Random rand = new Random();
-        private int tankSize, fuelType, id;
+        private int tankSize, fuelType, id, distrib;
         Panel panel = new Panel();
 
-        public Car(Simulation s, Panel resetPanel)
+        public Car(int id, Simulation s, Panel resetPanel)
         {
             sim = s;
             panel = resetPanel;
-
+            this.id = id;
             vehicle.BackColor = Color.Red;
             vehicle.BringToFront();
 
             panel.Controls.Add(vehicle);
         }
 
+        public int getTankSize()
+        {
+            return tankSize;
+        }
+
+        public int getFuelType()
+        {
+            return fuelType;
+        }
 
         public void carAction()
         {
@@ -44,12 +53,29 @@ namespace WinFormsApp1
 
                 move(new Point(position.X, sim.Height / 2)); //dojazd do bramy
                 move(new Point(position.X + 50, position.Y)); //wjazd
-                //moveToEmptyDistributor()
-                //move(new Point(200, 300));
-                Point p = distLoc();
 
-                move(new Point(p.X, p.Y+15));
-                move(new Point(p.X+200, p.Y + 15));
+                chosingDistributor.WaitOne();
+
+                distrib = getFreeDistributor();
+                distribCarId[distrib] = id;
+
+                chosingDistributor.Release();
+
+                move(new Point(distributorLocations[distrib].X, distributorLocations[distrib].Y+15)); //dojazd do dystrybutora
+                if (fuelType == 0)
+                {
+                    move(new Point(position.X + 60, position.Y));
+                }
+                dstSem[distrib].Release();
+                carSem[id].WaitOne();
+
+                chosingChashier.WaitOne();
+
+                chosingChashier.Release();
+
+
+
+                move(new Point(distributorLocations[distrib].X+200, position.Y)); //odjazd 
 
 
                 //moveToEmptyCash()
@@ -59,6 +85,7 @@ namespace WinFormsApp1
                 move(new Point(x.X+150, x.Y + 15));
 
 
+                //fuelingDistributor[]
                 // moveToExit();
 
                 move(new Point(sim.Width));
@@ -94,6 +121,8 @@ namespace WinFormsApp1
             vehicle.Height = 40;
             vehicle.Width = 20;
             vehicle.TextAlign = ContentAlignment.BottomLeft;
+            tankSize = rand.Next(30, 100);
+
             if (fuelType == 0)
             {
                 vehicle.Text = "ON";
@@ -162,7 +191,8 @@ namespace WinFormsApp1
         public int getFreeDistributor()
         {
             int i = 0;
-            while (true)
+            bool exist = false;
+            while (!exist)
             {
                 for (i = 0; i < maxDistributors; i++)
                 {
@@ -173,6 +203,7 @@ namespace WinFormsApp1
                     }
                 }
             }
+            return i;
         }
 
         public Point distLoc()

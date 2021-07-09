@@ -15,13 +15,13 @@ namespace WinFormsApp1
 {
     public partial class Simulation : Form
     {
-        public Car[] cars;
-        public Distributor[] distributors;
-        public Cash[] cashiers;
+        public static Car[] cars;
+        public static Distributor[] distributors;
+        public static Cash[] cashiers;
 
-        public Thread[] carThreads;
-        public Thread[] distributorThreads;
-        public Thread[] cashThreads;
+        public static Thread[] carThreads;
+        public static Thread[] distributorThreads;
+        public static Thread[] cashierThreads;
 
         System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
 
@@ -35,7 +35,7 @@ namespace WinFormsApp1
         private void InitializeData()
         {
             nCars = 0;
-
+            StaticVariables vars = new StaticVariables();
             cashLocations = new Point[maxCashiers];
             distributorLocations = new Point[maxDistributors];
             freeDistributors = new bool[maxDistributors];
@@ -79,11 +79,7 @@ namespace WinFormsApp1
             InitializeData();
             carThreads = new Thread[maxCars+5];
             distributorThreads = new Thread[maxDistributors];
-
-            for (int i = 0; i < maxCars+5; i++)
-            {
-                cars[i] = new Car(this, resetPanel);
-            }
+            cashierThreads = new Thread[maxCashiers];
 
             for (int i = 0; i < maxDistributors; i++)
             {
@@ -93,7 +89,22 @@ namespace WinFormsApp1
             {
                 cashiers[i] = new Cash(i, resetPanel);
             }
+            for (int i = 0; i < maxCars+5; i++)
+            {
+                cars[i] = new Car(i, this, resetPanel);
+            }
 
+            for (int i = 0; i < maxDistributors; i++)
+            {
+                distributorThreads[i] = new Thread(new ThreadStart(distributors[i].distributorAction));
+                distributorThreads[i].IsBackground = true;
+            }
+
+            for (int i = 0; i < maxCashiers; i++)
+            {
+                cashierThreads[i] = new Thread(new ThreadStart(cashiers[i].cashierAction));
+                cashierThreads[i].IsBackground = true;
+            }
 
             for (int i = 0; i < maxCars+5; i++)
             {
@@ -101,11 +112,22 @@ namespace WinFormsApp1
                 carThreads[i].IsBackground = true;
             }
 
+
             timer.Interval = 10;
             timer.Tick += timer1_Tick;
             timer.Start();
             timer.Enabled = true;
             foreach (Thread thread in carThreads)
+            {
+                thread.Start();
+            }
+
+            foreach (Thread thread in distributorThreads)
+            {
+                thread.Start();
+            }
+
+            foreach (Thread thread in cashierThreads)
             {
                 thread.Start();
             }
