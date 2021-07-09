@@ -22,39 +22,33 @@ namespace WinFormsApp1
         {
             while (true) 
             {
-                cashSem[id].Wait();   
-                double amount = distributors[cashDistribId[id]].getAmount();
-                int carId = distribCarId[cashDistribId[id]];
+                cashSem[id].Wait();
+                int distribId = cashDistribId[id];
+                double amount = distributors[distribId].getAmount();
+                int carId = distribCarId[distribId];
                 panel.Invoke(new Action(delegate ()
                 {
                     txt.Text = "Kwota: " + amount;
                 }));
-                Thread.Sleep(rand.Next(1000, 2000));
-
-                freeDistributors[cashDistribId[id]] = true;
-                freeCashiers[id] = true;
 
 
                 carSem[carId].Release();
+                paySem[id].Wait();
 
-                nCars--;
-                if (cars[carId].getFuelType() == 0)
-                {
-                    onCars--;
-                }
-                else
-                {
-                    pbCars--;
-                }
+                Thread.Sleep(rand.Next(1000, 2000));
                 panel.Invoke(new Action(delegate ()
                  {
                      txt.Text = "OTWARTE";
                   }));
-                distributors[cashDistribId[id]].reset();
+                carSem[carId].Release();
 
+                distributors[cashDistribId[id]].reset();
+                freeCashiers[id] = true;
+
+
+                freeDistributors[distribId] = true;
 
                 //if (station)
-
 
             }
         }

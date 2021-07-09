@@ -14,8 +14,6 @@ namespace WinFormsApp1
 {
     public class Distributor
     {
-
-        private Point position;
         private Random rand = new Random();
         private int id, onTank, pbTank, maxOnTank, maxPbTank;
         private double amount;
@@ -32,7 +30,10 @@ namespace WinFormsApp1
             return amount;
         }
 
-
+        public int getId()
+        {
+            return id;
+        }
         public void reset()
         {
             panel.Invoke(new Action(delegate ()
@@ -47,14 +48,12 @@ namespace WinFormsApp1
             this.id = id;
             this.panel = resetPanel;
 
-            maxOnTank = onTank = 200;
-            maxPbTank = pbTank = 200;
+            maxOnTank = onTank = 100;
+            maxPbTank = pbTank = 100;
 
             freeDistributors[id] = true;
             freePbDistributors[id] = true;
             freeOnDistributors[id] = true;
-
-            position = distributorLocations[id];
 
             //PB
             pb.Location = distributorLocations[id];
@@ -116,6 +115,10 @@ namespace WinFormsApp1
         {
             while (true)
             {
+                refuelingMutex.Wait();
+                needRefuel();
+                refuelingMutex.Release();
+
                 dstSem[id].Wait();
 
                 int xd = distribCarId[id];
@@ -132,6 +135,7 @@ namespace WinFormsApp1
                             {
                                 onLBL.BackColor = Color.Red;
                             }));
+                            freeOnDistributors[id] = false;
                             break;
                         }
                         panel.Invoke(new Action(delegate ()
@@ -151,6 +155,7 @@ namespace WinFormsApp1
                             {
                                 pbLbl.BackColor = Color.Red;
                             }));
+                            freePbDistributors[id] = false;
                             break;
                         }
                         panel.Invoke(new Action(delegate ()
@@ -169,10 +174,77 @@ namespace WinFormsApp1
             }
         }
 
-
-        public Point getLocation()
+        public void needRefuel()
         {
-            return new Point(position.X, position.Y);
+            int jd = 0;
+            for (int i = 0; i < maxDistributors; i++)
+            {
+                if (freePbDistributors[i] == false)
+                {
+                    jd++;
+                }
+                if (freeOnDistributors[i] == false)
+                {
+                    jd++;
+                }
+            }
+            if (jd >= maxDistributors / 2)
+            {
+                refueling = true;
+            }
         }
+
+        public void refuel()
+        {
+            for (int k = 0; k < maxDistributors; k++)
+            {
+                panel.Invoke(new Action(delegate ()
+                {
+                    txt.Text = "Uzupelnianie";
+                }));
+
+
+                for (int j = 0; j < maxOnTank; j++)
+                {
+                    if (on.Value == maxOnTank) break;
+                    panel.Invoke(new Action(delegate ()
+                    {
+
+                        if (on.Value <= 99)
+                        {
+                            onTank += 1;
+                        }
+                        on.Value += 1;
+                    }));
+
+                    Thread.Sleep(1);
+                }
+                for (int j = 0; j < maxPbTank; j++)
+                {
+                    if (pb.Value == maxPbTank) break;
+
+                    panel.Invoke(new Action(delegate ()
+                    {
+                        if (pb.Value <= 99)
+                        {
+                            pb.Value += 1;
+                        }
+                        pbTank += 1;
+                    }));
+                    Thread.Sleep(1);
+                }
+
+                panel.Invoke(new Action(delegate ()
+                {
+                    txt.Text = "0.00";
+                    pbLbl.BackColor = Color.LightGreen;
+                    onLBL.BackColor = Color.LightYellow;
+
+                }));
+
+
+            }
+            Thread.Sleep(10);
+        }        
     }
 }

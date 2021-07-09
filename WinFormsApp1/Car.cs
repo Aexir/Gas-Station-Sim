@@ -43,11 +43,12 @@ namespace WinFormsApp1
                 spawnCar();
             }));
 
+           // refuelingStation[id].Wait();
             mutex.Wait();
             Thread.Sleep(rand.Next(500, 1000));
 
             Thread.Sleep(300);
-            if (nCars < maxCars)
+            if (nCars < maxCars && refueling == false)
             {
                 nCars++;
                 carsInQueue.Add(id);
@@ -64,10 +65,12 @@ namespace WinFormsApp1
                 move(new Point(position.X, sim.Height / 2)); //dojazd do bramy
                 move(new Point(position.X + 50, position.Y)); //wjazd
 
+                carsInQueue.Remove(id);
 
                 //Wybor wolnego dystrybutora
                 chosingDistributor.Wait();
                 distrib = getFreeDistributor();
+
                 distribCarId[distrib] = id;
                 chosingDistributor.Release();
 
@@ -82,7 +85,6 @@ namespace WinFormsApp1
                 dstSem[distrib].Release(); 
                 carSem[id].Wait();
 
-                carsInQueue.Remove(id);
                 carsOut.Add(id);
                 //wybor wolnej kasy
                 chosingChashier.Wait();
@@ -98,21 +100,42 @@ namespace WinFormsApp1
                 //placenie
                 cashSem[cash].Release();
                 carSem[id].Wait();
-
+                paySem[cash].Release();
+                carSem[id].Wait();
                 //wyjazd z budowy
                 move(new Point(position.X+150, position.Y));
                 move(new Point(sim.Width));
                 carsOut.Remove(id);
+                nCars--;
+                if (fuelType == 0)
+                {
+                    onCars--;
+                }
+                else
+                {
+                    pbCars--;
+                }
             }
             else
             {
+                if (nCars == 0 && refueling == true)
+                {
+                    foreach (Distributor ddd in distributors)
+                    {
+                        ddd.refuel();
+                        freeDistributors[ddd.getId()] = true;
+                        freeOnDistributors[ddd.getId()] = true;
+                        freePbDistributors[ddd.getId()] = true;
+
+                        refuelingMutex.Wait();
+                        refueling = false;
+                        refuelingMutex.Release();
+                    }
+                }
                 mutex.Release();
                 move(new Point(position.X, sim.Height));
             }
-
             carAction();
-
-
         }
 
         public Point getPoint()
@@ -194,41 +217,39 @@ namespace WinFormsApp1
 
         public int getFreeDistributor()
         {
-            int i = 0;
-            bool exist = false;
-            while (!exist)
+            while (true)
             {
+                int i;
                 for (i = 0; i < maxDistributors; i++)
                 {
                     if (freeDistributors[i] == true)
                     {
-                        freeDistributors[i] = false;
-                        return i;
+                        if (fuelType == 0)
+                        {
+                            if (freeOnDistributors[i] == true)
+                            {
+                                freeDistributors[i] = false;
+                                return i;
+                            }
+                        }
+                        else
+                        {
+                            if (freePbDistributors[i] == true)
+                            {
+                                freeDistributors[i] = false;
+                                return i;
+                            }
+                        }
                     }
                 }
             }
-            return i;
         }
-
-        public Point distLoc()
-        {
-            int i = rand.Next(0, maxDistributors);
-            return distributorLocations[i];
-        }
-        
-        public Point cashLoc()
-        {
-            int i = rand.Next(0, maxCashiers);
-            return cashLocations[i];
-        }
-
 
         public int getFreeCashier()
         {
-            int i = 0;
-            bool exist = false;
-            while (!exist)
+            while (true)
             {
+                int i;
                 for (i = 0; i < maxCashiers; i++)
                 {
                     if (freeCashiers[i] == true)
@@ -238,7 +259,6 @@ namespace WinFormsApp1
                     }
                 }
             }
-            return i;
         }
     }
 }

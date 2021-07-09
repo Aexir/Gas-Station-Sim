@@ -40,11 +40,15 @@ namespace WinFormsApp1
         public static SemaphoreSlim[] dstSem = new SemaphoreSlim[20];
         public static SemaphoreSlim[] cashSem = new SemaphoreSlim[20];
 
+        public static SemaphoreSlim[] paySem = new SemaphoreSlim[20];
+
         public static SemaphoreSlim chosingDistributor = new SemaphoreSlim(1, 1);
         public static SemaphoreSlim chosingChashier = new SemaphoreSlim(1, 1);
         public static SemaphoreSlim stationEnterance = new SemaphoreSlim(1, 1);
 
-        public static SemaphoreSlim refuelingStation = new SemaphoreSlim(1, 1);
+        public static SemaphoreSlim refuelingMutex = new SemaphoreSlim(1, 1);
+
+        // public static SemaphoreSlim[] refuelingStation = new SemaphoreSlim[20];
         //INFO
         public static Point enterance = new Point(0, 900);
         public static Point[] cashLocations;
@@ -59,6 +63,8 @@ namespace WinFormsApp1
         public static int[] distribCarId = new int[20];
         public static int[] cashDistribId = new int[20];
 
+        public static bool refueling = false;
+
         public StaticVariables()
         {
             for (int i = 0; i < 20; i++)
@@ -66,6 +72,10 @@ namespace WinFormsApp1
                 carSem[i] = new SemaphoreSlim(0, 20);
                 dstSem[i] = new SemaphoreSlim(0, 20);
                 cashSem[i] = new SemaphoreSlim(0, 20);
+                paySem[i] = new SemaphoreSlim(0, 20);
+              //  refuelingStation[i] = new SemaphoreSlim(0, 20);
+
+                
                 carsInQueue = new List<int>();
                 carsOut = new List<int>();
             }

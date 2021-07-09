@@ -31,7 +31,10 @@ namespace WinFormsApp1
             StaticVariables vars = new StaticVariables();
             cashLocations = new Point[maxCashiers];
             distributorLocations = new Point[maxDistributors];
+
             freeDistributors = new bool[maxDistributors];
+            freePbDistributors = new bool[maxDistributors];
+            freeOnDistributors = new bool[maxDistributors];
 
 
             cars = new Car[maxCars+5];
