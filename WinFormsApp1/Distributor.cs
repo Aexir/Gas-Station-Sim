@@ -16,30 +16,43 @@ namespace WinFormsApp1
     {
 
         private Point position;
-        Random rand = new Random();
-        private int id, onTank, pbTank;
-        public Label dst = new Label();
-        public Label onLBL = new Label();
-        public Label pbLbl = new Label();
-        public TextBox txt = new TextBox();
-        public ProgressBar pb = new ProgressBar();
-        public ProgressBar on = new ProgressBar();
-        Panel panel = new Panel();
-        private bool inUse;
+        private Random rand = new Random();
+        private int id, onTank, pbTank, maxOnTank, maxPbTank;
+        private double amount;
+        private Label dst = new Label();
+        private Label onLBL = new Label();
+        private Label pbLbl = new Label();
+        private TextBox txt = new TextBox();
+        private ProgressBar pb = new ProgressBar();
+        private ProgressBar on = new ProgressBar();
+        private Panel panel = new Panel();
+
+        public double getAmount()
+        {
+            return amount;
+        }
 
 
+        public void reset()
+        {
+            panel.Invoke(new Action(delegate ()
+            {
+                this.amount = 0;
+                txt.Text = "0.00";
+            }));
+        }
 
         public Distributor(int id, Panel resetPanel)
         {
             this.id = id;
             this.panel = resetPanel;
 
-            onTank = 1000;
-            pbTank = 1000;
-            inUse = false;
-
+            maxOnTank = onTank = 200;
+            maxPbTank = pbTank = 200;
 
             freeDistributors[id] = true;
+            freePbDistributors[id] = true;
+            freeOnDistributors[id] = true;
 
             position = distributorLocations[id];
 
@@ -47,18 +60,19 @@ namespace WinFormsApp1
             pb.Location = distributorLocations[id];
             pb.Width = 50;
             pb.Height = 10;
-            pb.Maximum = 1000;
+            pb.Maximum = pbTank;
             pb.Value = pbTank;
 
             //ON
             on.Location = new Point(distributorLocations[id].X + pb.Width + 5, distributorLocations[id].Y);
             on.Width = 50;
             on.Height = 10;
-            on.Maximum = 1000;
+            on.Maximum = onTank;
             on.Value = onTank;
             //TEXT
-            txt.Text = "0";
+            txt.Text = "0.00";
             txt.TextAlign = HorizontalAlignment.Center;
+            txt.Multiline = true;
             txt.Height = 50;
             txt.Width = 105;
             txt.Location = new Point(distributorLocations[id].X, distributorLocations[id].Y - txt.Height - on.Height + 10); ;
@@ -102,36 +116,56 @@ namespace WinFormsApp1
         {
             while (true)
             {
-
-
-                dstSem[id].WaitOne();
+                dstSem[id].Wait();
 
                 int xd = distribCarId[id];
 
-                int tankSize = Simulation.cars[xd].getTankSize();
+                int tankSize = cars[xd].getTankSize();
 
                 for (int i = 0; i < tankSize; i++)
                 {
-                    if (Simulation.cars[xd].getFuelType() == 0) //ON
+                    if (cars[xd].getFuelType() == 0) //ON
                     {
+                        if (onTank == 0)
+                        {
+                            panel.Invoke(new Action(delegate ()
+                            {
+                                onLBL.BackColor = Color.Red;
+                            }));
+                            break;
+                        }
                         panel.Invoke(new Action(delegate ()
                         {
                             on.Value -= 1;
+                            onTank -= 1;
+                            amount = Math.Round(4.30 * i, 2);
+                            txt.Text = "Ilosc: " + i + Environment.NewLine + "Koszt: " + amount;
                         }));
 
                     }
                     else //PB
                     {
+                        if (pbTank == 0)
+                        {
+                            panel.Invoke(new Action(delegate ()
+                            {
+                                pbLbl.BackColor = Color.Red;
+                            }));
+                            break;
+                        }
                         panel.Invoke(new Action(delegate ()
                         {
                             pb.Value -= 1;
+                            pbTank -= 1;
+                            amount = Math.Round(4.30 * i, 2);
+                            txt.Text = "Ilosc: " + i + Environment.NewLine + "Koszt: " + amount;
                         }));
+
                     }
                     Thread.Sleep(rand.Next(tankSize));
                 }
 
                 carSem[xd].Release();
-                freeDistributors[id] = true;
             }
         }
 
@@ -140,22 +174,5 @@ namespace WinFormsApp1
         {
             return new Point(position.X, position.Y);
         }
-
-        public bool isInUse()
-        {
-            return inUse;
-        }
-
-        public void use()
-        {
-            inUse = true;
-        }
-
-        public void leave()
-        {
-            inUse = false;
-        }
-
-
     }
 }

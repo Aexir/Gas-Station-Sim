@@ -10,10 +10,10 @@ namespace WinFormsApp1
     {
         private Simulation sim;
         private Point position;
-        public Label vehicle = new Label();
-        Random rand = new Random();
+        public  Label vehicle = new Label();
+        private Random rand = new Random();
         private int tankSize, fuelType, id, distrib;
-        Panel panel = new Panel();
+        private Panel panel = new Panel();
 
         public Car(int id, Simulation s, Panel resetPanel)
         {
@@ -42,69 +42,76 @@ namespace WinFormsApp1
             {
                 spawnCar();
             }));
-            Thread.Sleep(rand.Next(500, 2000));
 
-            mutex.WaitOne();
+            mutex.Wait();
+            Thread.Sleep(rand.Next(500, 1000));
+
             Thread.Sleep(300);
             if (nCars < maxCars)
             {
                 nCars++;
+                carsInQueue.Add(id);
+                if (fuelType == 0)
+                {
+                    onCars++;
+                }
+                else
+                {
+                    pbCars++;
+                }
                 mutex.Release();
 
                 move(new Point(position.X, sim.Height / 2)); //dojazd do bramy
                 move(new Point(position.X + 50, position.Y)); //wjazd
 
-                chosingDistributor.WaitOne();
 
+                //Wybor wolnego dystrybutora
+                chosingDistributor.Wait();
                 distrib = getFreeDistributor();
                 distribCarId[distrib] = id;
-
                 chosingDistributor.Release();
 
-                move(new Point(distributorLocations[distrib].X, distributorLocations[distrib].Y+15)); //dojazd do dystrybutora
+                //dojazd do dystrybutora
+                move(new Point(distributorLocations[distrib].X, distributorLocations[distrib].Y+15)); 
                 if (fuelType == 0)
                 {
                     move(new Point(position.X + 60, position.Y));
                 }
-                dstSem[distrib].Release();
-                carSem[id].WaitOne();
 
-                chosingChashier.WaitOne();
+                //tankowanie
+                dstSem[distrib].Release(); 
+                carSem[id].Wait();
 
+                carsInQueue.Remove(id);
+                carsOut.Add(id);
+                //wybor wolnej kasy
+                chosingChashier.Wait();
+                int cash = getFreeCashier();
+                cashDistribId[cash] = distrib;
                 chosingChashier.Release();
 
+                //dojazd do kasy
+                move(new Point(position.X+200, position.Y)); 
+                move(new Point(cashLocations[cash].X, cashLocations[cash].Y + 15));
 
 
-                move(new Point(distributorLocations[distrib].X+200, position.Y)); //odjazd 
+                //placenie
+                cashSem[cash].Release();
+                carSem[id].Wait();
 
-
-                //moveToEmptyCash()
-
-                Point x = cashLoc();
-                move(new Point(x.X, x.Y + 15));
-                move(new Point(x.X+150, x.Y + 15));
-
-
-                //fuelingDistributor[]
-                // moveToExit();
-
+                //wyjazd z budowy
+                move(new Point(position.X+150, position.Y));
                 move(new Point(sim.Width));
-                nCars--;
+                carsOut.Remove(id);
             }
             else
             {
                 mutex.Release();
                 move(new Point(position.X, sim.Height));
             }
-            if (fuelType == 0)
-            {
-                onCars--;
-            }
-            else
-            {
-                pbCars--;
-            }
+
             carAction();
+
 
         }
 
@@ -115,7 +122,6 @@ namespace WinFormsApp1
 
         public void spawnCar()
         {
-            while (sim == null) {; }
             position = new Point(20, 0);
             fuelType = rand.Next(2);
             vehicle.Height = 40;
@@ -125,15 +131,13 @@ namespace WinFormsApp1
 
             if (fuelType == 0)
             {
-                vehicle.Text = "ON";
+                vehicle.Text = "ON " +id;
                 vehicle.BackColor = Color.Yellow;
-                onCars++;
             }
             else
             {
-                vehicle.Text = "PB";
+                vehicle.Text = "PB " + id;
                 vehicle.BackColor = Color.LightGreen;
-                pbCars++;
             }
         }
 
@@ -222,10 +226,17 @@ namespace WinFormsApp1
         public int getFreeCashier()
         {
             int i = 0;
-            bool exists = false;
-            while (!exists)
+            bool exist = false;
+            while (!exist)
             {
-
+                for (i = 0; i < maxCashiers; i++)
+                {
+                    if (freeCashiers[i] == true)
+                    {
+                        freeCashiers[i] = false;
+                        return i;
+                    }
+                }
             }
             return i;
         }

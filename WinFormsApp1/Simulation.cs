@@ -15,13 +15,7 @@ namespace WinFormsApp1
 {
     public partial class Simulation : Form
     {
-        public static Car[] cars;
-        public static Distributor[] distributors;
-        public static Cash[] cashiers;
 
-        public static Thread[] carThreads;
-        public static Thread[] distributorThreads;
-        public static Thread[] cashierThreads;
 
         System.Windows.Forms.Timer timer = new System.Windows.Forms.Timer();
 
@@ -70,7 +64,18 @@ namespace WinFormsApp1
             {
                 cars[i].vehicle.Location = cars[i].getPoint();
             }
-            textBox1.Text = "PB = " + pbCars + Environment.NewLine + "On = " + onCars + Environment.NewLine + "Cars: " + nCars + "/" + maxCars;
+            textBox1.Text = "PB = " + pbCars + Environment.NewLine + "On = " + onCars + Environment.NewLine + "Cars: " + nCars + "/" + maxCars
+                + Environment.NewLine + "W: ";
+            for (int i = 0; i < carsInQueue.Count; i++)
+            {
+                textBox1.Text += carsInQueue[i] + " ";
+            }
+            textBox1.Text += Environment.NewLine + "O: ";
+            for (int i = 0; i < carsOut.Count; i++)
+            {
+                textBox1.Text += carsOut[i]+ " ";
+            }
+
         }
 
         private void btnStart_Click(object sender, EventArgs e)
