@@ -115,9 +115,9 @@ namespace WinFormsApp1
         {
             while (true)
             {
-                refuelingMutex.Wait();
+                refuelingMutex.WaitOne();
                 needRefuel();
-                refuelingMutex.Release();
+                refuelingMutex.ReleaseMutex();
 
                 dstSem[id].Wait();
 
@@ -239,7 +239,6 @@ namespace WinFormsApp1
                     txt.Text = "0.00";
                     pbLbl.BackColor = Color.LightGreen;
                     onLBL.BackColor = Color.LightYellow;
-
                 }));
 
 

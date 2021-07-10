@@ -38,12 +38,9 @@ namespace WinFormsApp1
 
         public void carAction()
         {
-            sim.Invoke(new Action(delegate ()
-            {
-                spawnCar();
-            }));
+            
+            spawnCar();
 
-           // refuelingStation[id].Wait();
             mutex.Wait();
             Thread.Sleep(rand.Next(500, 1000));
 
@@ -63,58 +60,88 @@ namespace WinFormsApp1
                 mutex.Release();
 
                 move(new Point(position.X, sim.Height / 2)); //dojazd do bramy
-                move(new Point(position.X + 50, position.Y)); //wjazd
 
-                carsInQueue.Remove(id);
+                move(new Point(position.X + 100, position.Y)); //wjazd
+
+
 
                 //Wybor wolnego dystrybutora
                 chosingDistributor.Wait();
                 distrib = getFreeDistributor();
 
-                distribCarId[distrib] = id;
-                chosingDistributor.Release();
-
-                //dojazd do dystrybutora
-                move(new Point(distributorLocations[distrib].X, distributorLocations[distrib].Y+15)); 
-                if (fuelType == 0)
+                if (distrib == maxDistributors)
                 {
-                    move(new Point(position.X + 60, position.Y));
-                }
+                    counter.WaitOne();
 
-                //tankowanie
-                dstSem[distrib].Release(); 
-                carSem[id].Wait();
+                    decreaseCarCounter();
+                    
+                    carsInQueue.Remove(id);
+                    chosingDistributor.Release();
+                    
+                    counter.ReleaseMutex();
 
-                carsOut.Add(id);
-                //wybor wolnej kasy
-                chosingChashier.Wait();
-                int cash = getFreeCashier();
-                cashDistribId[cash] = distrib;
-                chosingChashier.Release();
-
-                //dojazd do kasy
-                move(new Point(position.X+200, position.Y)); 
-                move(new Point(cashLocations[cash].X, cashLocations[cash].Y + 15));
-
-
-                //placenie
-                cashSem[cash].Release();
-                carSem[id].Wait();
-                paySem[cash].Release();
-                carSem[id].Wait();
-                //wyjazd z budowy
-                move(new Point(position.X+150, position.Y));
-                move(new Point(sim.Width));
-                carsOut.Remove(id);
-                nCars--;
-                if (fuelType == 0)
-                {
-                    onCars--;
+                    panel.Invoke(new Action(delegate ()
+                    {
+                        vehicle.BackColor = Color.DarkRed;
+                    }));
+                    move(new Point(distributorLocations[1].X, distributorLocations[1].Y+15));
+                    move(new Point(position.X + 200, position.Y));
+                    move(new Point(position.X + 200, position.Y));
+                    move(new Point(cashLocations[1].X, cashLocations[1].Y + 15));
+                    move(new Point(position.X + 150, position.Y));
+                    move(new Point(sim.Width));
                 }
                 else
                 {
-                    pbCars--;
+                    distribCarId[distrib] = id;
+                    carsInQueue.Remove(id);
+                    carFueling.Add(id); //lista tankujacych
+
+                    chosingDistributor.Release();
+
+                    //dojazd do dystrybutora
+                    move(new Point(distributorLocations[distrib].X, distributorLocations[distrib].Y + 15));
+                    if (fuelType == 0)
+                    {
+                        move(new Point(position.X + 60, position.Y));
+                    }
+
+                    //tankowanie
+                    dstSem[distrib].Release();
+
+                    carSem[id].Wait();
+
+
+                    //wybor wolnej kasy
+                    chosingChashier.Wait();
+                    carFueling.Remove(id);
+                    carsOut.Add(id);
+
+                    int cash = getFreeCashier();
+                    cashDistribId[cash] = distrib;
+                    chosingChashier.Release();
+                    //dojazd do kasy
+                    move(new Point(position.X + 200, position.Y));
+                    move(new Point(cashLocations[cash].X, cashLocations[cash].Y + 15));
+
+
+                    //placenie
+                    cashSem[cash].Release();
+                    carSem[id].Wait();
+                    paySem[cash].Release();
+                    carSem[id].Wait();
+                    move(new Point(position.X + 150, position.Y));                //wyjazd z budowy
+
+                    move(new Point(sim.Width));
+                    carsOut.Remove(id);
+
+                    //counter.WaitOne();
+                    decreaseCarCounter();
+                   // counter.ReleaseMutex();
                 }
+
+
+                
             }
             else
             {
@@ -127,16 +154,35 @@ namespace WinFormsApp1
                         freeOnDistributors[ddd.getId()] = true;
                         freePbDistributors[ddd.getId()] = true;
 
-                        refuelingMutex.Wait();
-                        refueling = false;
-                        refuelingMutex.Release();
                     }
+                    refuelingMutex.WaitOne();
+                    refueling = false;
+                    refuelingMutex.ReleaseMutex();
                 }
                 mutex.Release();
                 move(new Point(position.X, sim.Height));
             }
             carAction();
         }
+
+        public void increaseCarCounter()
+        {
+
+        }
+
+        public void decreaseCarCounter()
+        {
+            nCars--;
+            if (fuelType == 0)
+            {
+                onCars--;
+            }
+            else
+            {
+                pbCars--;
+            }
+        }
+
 
         public Point getPoint()
         {
@@ -145,23 +191,27 @@ namespace WinFormsApp1
 
         public void spawnCar()
         {
-            position = new Point(20, 0);
-            fuelType = rand.Next(2);
-            vehicle.Height = 40;
-            vehicle.Width = 20;
-            vehicle.TextAlign = ContentAlignment.BottomLeft;
-            tankSize = rand.Next(30, 100);
+            sim.Invoke(new Action(delegate ()
+            {
+                position = new Point(20, 0);
+                fuelType = rand.Next(2);
 
-            if (fuelType == 0)
-            {
-                vehicle.Text = "ON " +id;
-                vehicle.BackColor = Color.Yellow;
-            }
-            else
-            {
-                vehicle.Text = "PB " + id;
-                vehicle.BackColor = Color.LightGreen;
-            }
+                vehicle.Height = 40;
+                vehicle.Width = 20;
+                vehicle.TextAlign = ContentAlignment.BottomLeft;
+                tankSize = rand.Next(30, 100);
+
+                if (fuelType == 0)
+                {
+                    vehicle.Text = "ON " + id;
+                    vehicle.BackColor = Color.Yellow;
+                }
+                else
+                {
+                    vehicle.Text = "PB " + id;
+                    vehicle.BackColor = Color.LightGreen;
+                }
+            }));  
         }
 
         public void move(Point destination)
@@ -220,29 +270,53 @@ namespace WinFormsApp1
             while (true)
             {
                 int i;
+                int pbCount = 0;
+                int onCount = 0;
                 for (i = 0; i < maxDistributors; i++)
                 {
-                    if (freeDistributors[i] == true)
+                    if (refueling)
                     {
-                        if (fuelType == 0)
+                        if (freeOnDistributors[i] == true)
                         {
-                            if (freeOnDistributors[i] == true)
-                            {
-                                freeDistributors[i] = false;
-                                return i;
-                            }
+                            onCount++;
                         }
-                        else
+                        if (freePbDistributors[i] == true)
                         {
-                            if (freePbDistributors[i] == true)
+                            pbCount++;
+                        }
+
+                        if ((fuelType == 0 && onCount == 0) || (fuelType != 0 && pbCount == 0))
+                        {
+                            return maxDistributors;
+                        }
+                    }
+                   
+                    else
+                    {
+                        if (freeDistributors[i] == true)
+                        {
+                            if (fuelType == 0)
                             {
-                                freeDistributors[i] = false;
-                                return i;
+                                if (freeOnDistributors[i] == true)
+                                {
+                                    freeDistributors[i] = false;
+                                    return i;
+                                }
+                            }
+                            else
+                            {
+                                if (freePbDistributors[i] == true)
+                                {
+                                    freeDistributors[i] = false;
+                                    return i;
+                                }
                             }
                         }
                     }
+                   
                 }
             }
+
         }
 
         public int getFreeCashier()

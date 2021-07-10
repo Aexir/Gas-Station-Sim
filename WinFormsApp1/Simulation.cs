@@ -72,11 +72,20 @@ namespace WinFormsApp1
             {
                 textBox1.Text += carsInQueue[i] + " ";
             }
-            textBox1.Text += Environment.NewLine + "O: ";
+
+            textBox1.Text += Environment.NewLine + "F: ";
+            for (int i = 0; i < carFueling.Count; i++)
+            {
+                textBox1.Text += carFueling[i] + " ";
+            }
+
+            textBox1.Text += Environment.NewLine + "P: ";
             for (int i = 0; i < carsOut.Count; i++)
             {
                 textBox1.Text += carsOut[i]+ " ";
             }
+
+
 
         }
 

@@ -30,8 +30,9 @@ namespace WinFormsApp1
         public static int pbCars = 0;
         public static int onCars = 0;
 
-        public static List<int> carsInQueue;
-        public static List<int> carsOut;
+        public static List<int> carsInQueue = new List<int>();
+        public static List<int> carsOut = new List<int>();
+        public static List<int> carFueling = new List<int>();
 
         //SEMAPHORES
         public static SemaphoreSlim mutex = new SemaphoreSlim(1, 1); //zliczanie samochodow 
@@ -44,11 +45,10 @@ namespace WinFormsApp1
 
         public static SemaphoreSlim chosingDistributor = new SemaphoreSlim(1, 1);
         public static SemaphoreSlim chosingChashier = new SemaphoreSlim(1, 1);
-        public static SemaphoreSlim stationEnterance = new SemaphoreSlim(1, 1);
 
-        public static SemaphoreSlim refuelingMutex = new SemaphoreSlim(1, 1);
+        public static Mutex refuelingMutex = new Mutex();
+        public static Mutex counter = new Mutex();
 
-        // public static SemaphoreSlim[] refuelingStation = new SemaphoreSlim[20];
         //INFO
         public static Point enterance = new Point(0, 900);
         public static Point[] cashLocations;
@@ -73,11 +73,6 @@ namespace WinFormsApp1
                 dstSem[i] = new SemaphoreSlim(0, 20);
                 cashSem[i] = new SemaphoreSlim(0, 20);
                 paySem[i] = new SemaphoreSlim(0, 20);
-              //  refuelingStation[i] = new SemaphoreSlim(0, 20);
-
-                
-                carsInQueue = new List<int>();
-                carsOut = new List<int>();
             }
 
             for (int i = 0; i < maxDistributors; i++)
