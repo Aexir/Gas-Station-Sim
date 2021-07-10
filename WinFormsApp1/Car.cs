@@ -103,12 +103,7 @@ namespace WinFormsApp1
 
                         leaveStation();
                         decreaseCarCounter();
-
-
-                    }
-
-
-                    
+                    }                    
                 }
                 else
                 {
@@ -132,13 +127,10 @@ namespace WinFormsApp1
                     }
                     refuelMutex.Release();
                     refueling = false;
-                   // needRef = 0;
                 }
             }
-
             Thread.Sleep(rand.Next(500, 1000));
             carAction();
-
         }
 
         public void leaveStation()
@@ -217,8 +209,6 @@ namespace WinFormsApp1
                 }));
                 Thread.Sleep(1);
             }
-
-
 
             while (position.Y < destination.Y)
             {

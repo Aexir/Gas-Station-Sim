@@ -26,9 +26,10 @@ namespace WinFormsApp1
         public static int maxDistributors = 5;
 
         public static int nCars = 0;
-
         public static int pbCars = 0;
         public static int onCars = 0;
+
+        public static bool refueling = false;
 
         public static LinkedList<int> carsInQueue = new();
         public static LinkedList<int> carsPaying = new();
@@ -43,36 +44,23 @@ namespace WinFormsApp1
 
         public static SemaphoreSlim chosingDistributor = new(1, 1);
         public static SemaphoreSlim chosingChashier = new(1, 1);
-        public static SemaphoreSlim refCount = new(1, 1);
 
+        public static SemaphoreSlim refCount = new(1, 1);
         public static SemaphoreSlim refuelMutex = new(1, 1);
 
 
-
-        public static SemaphoreSlim distributorEntry = new(0, 20);
-        public static SemaphoreSlim cashierEntry = new(0, 20);
-
-        public static SemaphoreSlim refuelingStation = new SemaphoreSlim(1, 1);
         //INFO
-        public static Point enterance = new Point(0, 900);
         public static Point[] cashLocations;
         public static Point[] distributorLocations;
 
-        public static bool[] freeDistributors = new bool[20];
-        public static bool[] freeOnDistributors = new bool[20];
-        public static bool[] freePbDistributors = new bool[20];
+        public static bool[] freeDistributors = new bool[6];
+        public static bool[] freeOnDistributors = new bool[6];
+        public static bool[] freePbDistributors = new bool[6];
 
-        public static bool[] freeCashiers = new bool[20];
+        public static bool[] freeCashiers = new bool[10];
 
         public static int[] distribCarId = new int[20];
         public static int[] cashDistribId = new int[20];
-
-        public static int[] stationForCar = new int[20];
-        public static int[] cashierForCar = new int[20];
-
-        //public static int needRef = 0;
-
-        public static bool refueling = false;
 
         public StaticVariables()
         {

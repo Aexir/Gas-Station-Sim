@@ -101,8 +101,6 @@ namespace WinFormsApp1
             dst.Width = 105;
             dst.Location = new Point(distributorLocations[id].X, distributorLocations[id].Y - txt.Height - on.Height - pbLbl.Height - 25);
 
-
-
             resetPanel.Controls.Add(dst);
             resetPanel.Controls.Add(onLBL);
             resetPanel.Controls.Add(pbLbl);
@@ -122,12 +120,11 @@ namespace WinFormsApp1
                 dstSem[id].Wait();
                 int carId = distribCarId[id];
 
-                carFueling(carId);
-                carSem[carId].Release();
+                carFueling(carId); //tankowanie 
 
+                carSem[carId].Release();
             }
         }
-
 
         public void needRefuel()
         {
@@ -246,8 +243,6 @@ namespace WinFormsApp1
                     pbLbl.BackColor = Color.LightGreen;
                     onLBL.BackColor = Color.LightYellow;
                 }));
-
-
             }
             Thread.Sleep(10);
         }

@@ -27,7 +27,7 @@ namespace WinFormsApp1
                 double amount = distributors[distribId].getAmount();
                 int carId = distribCarId[distribId];
 
-                updateValue(amount);
+                updateValue(amount); //wyswietlanie kwoty na kasie
 
                 carSem[carId].Release();
                 cashSem[id].Wait();
@@ -37,12 +37,9 @@ namespace WinFormsApp1
                 reset();
 
                 carSem[carId].Release();
-
                 distributors[cashDistribId[id]].resetDistributor();
                 freeCashiers[id] = true;
                 freeDistributors[distribId] = true;
-
-
             }
         }
 
