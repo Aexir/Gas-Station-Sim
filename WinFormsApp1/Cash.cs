@@ -20,40 +20,27 @@ namespace WinFormsApp1
 
         public void cashierAction()
         {
-            while (true) 
+            while (true)
             {
-                cashSem[id].Wait();   
-                double amount = distributors[cashDistribId[id]].getAmount();
-                int carId = distribCarId[cashDistribId[id]];
-                panel.Invoke(new Action(delegate ()
-                {
-                    txt.Text = "Kwota: " + amount;
-                }));
+                cashSem[id].Wait();
+                int distribId = cashDistribId[id];
+                double amount = distributors[distribId].getAmount();
+                int carId = distribCarId[distribId];
+
+                updateValue(amount);
+
+                carSem[carId].Release();
+                cashSem[id].Wait();
+
                 Thread.Sleep(rand.Next(1000, 2000));
 
-                freeDistributors[cashDistribId[id]] = true;
-                freeCashiers[id] = true;
-
+                reset();
 
                 carSem[carId].Release();
 
-                nCars--;
-                if (cars[carId].getFuelType() == 0)
-                {
-                    onCars--;
-                }
-                else
-                {
-                    pbCars--;
-                }
-                panel.Invoke(new Action(delegate ()
-                 {
-                     txt.Text = "OTWARTE";
-                  }));
-                distributors[cashDistribId[id]].reset();
-
-
-                //if (station)
+                distributors[cashDistribId[id]].resetDistributor();
+                freeCashiers[id] = true;
+                freeDistributors[distribId] = true;
 
 
             }
@@ -66,7 +53,7 @@ namespace WinFormsApp1
             freeCashiers[id] = true;
 
             txt.Location = cashLocations[id];
-            cashLbl.Location = new Point(cashLocations[id].X, cashLocations[id].Y - 25);
+            cashLbl.Location = new Point(cashLocations[id].X, cashLocations[id].Y - 35);
             cashLbl.BackColor = Color.LightGray;
 
             cashLbl.Font = new System.Drawing.Font("Segoe UI Symbol", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
@@ -74,6 +61,21 @@ namespace WinFormsApp1
 
             resetPanel.Controls.Add(cashLbl);
             resetPanel.Controls.Add(txt);
+        }
+
+        public void reset()
+        {
+            panel.Invoke(new Action(delegate ()
+            {
+                txt.Text = "OTWARTE";
+            }));
+        }
+        public void updateValue(double amount)
+        {
+            panel.Invoke(new Action(delegate ()
+            {
+                txt.Text = "Kwota: " + amount;
+            }));
         }
     }
 }

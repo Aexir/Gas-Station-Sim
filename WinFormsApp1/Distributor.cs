@@ -14,8 +14,6 @@ namespace WinFormsApp1
 {
     public class Distributor
     {
-
-        private Point position;
         private Random rand = new Random();
         private int id, onTank, pbTank, maxOnTank, maxPbTank;
         private double amount;
@@ -32,8 +30,11 @@ namespace WinFormsApp1
             return amount;
         }
 
-
-        public void reset()
+        public int getId()
+        {
+            return id;
+        }
+        public void resetDistributor()
         {
             panel.Invoke(new Action(delegate ()
             {
@@ -47,14 +48,12 @@ namespace WinFormsApp1
             this.id = id;
             this.panel = resetPanel;
 
-            maxOnTank = onTank = 200;
-            maxPbTank = pbTank = 200;
+            maxOnTank = onTank = 100;
+            maxPbTank = pbTank = 100;
 
             freeDistributors[id] = true;
             freePbDistributors[id] = true;
             freeOnDistributors[id] = true;
-
-            position = distributorLocations[id];
 
             //PB
             pb.Location = distributorLocations[id];
@@ -116,63 +115,141 @@ namespace WinFormsApp1
         {
             while (true)
             {
+                refCount.Wait();
+                needRefuel();
+                refCount.Release();
+
                 dstSem[id].Wait();
+                int carId = distribCarId[id];
 
-                int xd = distribCarId[id];
+                carFueling(carId);
+                carSem[carId].Release();
 
-                int tankSize = cars[xd].getTankSize();
-
-                for (int i = 0; i < tankSize; i++)
-                {
-                    if (cars[xd].getFuelType() == 0) //ON
-                    {
-                        if (onTank == 0)
-                        {
-                            panel.Invoke(new Action(delegate ()
-                            {
-                                onLBL.BackColor = Color.Red;
-                            }));
-                            break;
-                        }
-                        panel.Invoke(new Action(delegate ()
-                        {
-                            on.Value -= 1;
-                            onTank -= 1;
-                            amount = Math.Round(4.30 * i, 2);
-                            txt.Text = "Ilosc: " + i + Environment.NewLine + "Koszt: " + amount;
-                        }));
-
-                    }
-                    else //PB
-                    {
-                        if (pbTank == 0)
-                        {
-                            panel.Invoke(new Action(delegate ()
-                            {
-                                pbLbl.BackColor = Color.Red;
-                            }));
-                            break;
-                        }
-                        panel.Invoke(new Action(delegate ()
-                        {
-                            pb.Value -= 1;
-                            pbTank -= 1;
-                            amount = Math.Round(4.30 * i, 2);
-                            txt.Text = "Ilosc: " + i + Environment.NewLine + "Koszt: " + amount;
-                        }));
-
-                    }
-                    Thread.Sleep(rand.Next(tankSize));
-                }
-
-                carSem[xd].Release();
             }
         }
 
 
-        public Point getLocation()
+        public void needRefuel()
         {
-            return new Point(position.X, position.Y);
+            int needRef = 0;
+            for (int i = 0; i < maxDistributors; i++)
+            {
+                if (freePbDistributors[i] == false)
+                {
+                    needRef++;
+                }
+                if (freeOnDistributors[i] == false)
+                {
+                    needRef++;
+                }
+            }
+            if (needRef >= maxDistributors / 2)
+            {
+                refueling = true;
+            }
+        }
+
+        public void carFueling(int carId)
+        {
+            int carTankSize = cars[carId].getTankSize();
+            int carFuelType = cars[carId].getFuelType();
+
+            for (int i = 0; i < carTankSize; i++)
+            {
+                if (carFuelType == 0) //ON
+                {
+                    if (onTank == 0)
+                    {
+                        panel.Invoke(new Action(delegate ()
+                        {
+                            onLBL.BackColor = Color.Red;
+                        }));
+                        freeOnDistributors[id] = false;
+                        break;
+                    }
+                    panel.Invoke(new Action(delegate ()
+                    {
+                        on.Value -= 1;
+                        onTank -= 1;
+                        amount = Math.Round(4.30 * i, 2);
+                        txt.Text = "Ilosc: " + i + Environment.NewLine + "Koszt: " + amount;
+                    }));
+
+                }
+                else //PB
+                {
+                    if (pbTank == 0)
+                    {
+                        panel.Invoke(new Action(delegate ()
+                        {
+                            pbLbl.BackColor = Color.Red;
+                        }));
+                        freePbDistributors[id] = false;
+                        break;
+                    }
+                    panel.Invoke(new Action(delegate ()
+                    {
+                        pb.Value -= 1;
+                        pbTank -= 1;
+                        amount = Math.Round(4.30 * i, 2);
+                        txt.Text = "Ilosc: " + i + Environment.NewLine + "Koszt: " + amount;
+                    }));
+
+                }
+                Thread.Sleep(rand.Next(carTankSize));
+            }
+        }
+
+        public void refuel()
+        {
+            for (int k = 0; k < maxDistributors; k++)
+            {
+                panel.Invoke(new Action(delegate ()
+                {
+                    txt.Text = "Uzupelnianie";
+                }));
+
+
+                for (int j = 0; j < maxOnTank; j++)
+                {
+                    if (on.Value == maxOnTank) break;
+                    panel.Invoke(new Action(delegate ()
+                    {
+
+                        if (on.Value <= 99)
+                        {
+                            onTank += 1;
+                        }
+                        on.Value += 1;
+                    }));
+
+                    Thread.Sleep(1);
+                }
+                for (int j = 0; j < maxPbTank; j++)
+                {
+                    if (pb.Value == maxPbTank) break;
+
+                    panel.Invoke(new Action(delegate ()
+                    {
+                        if (pb.Value <= 99)
+                        {
+                            pb.Value += 1;
+                        }
+                        pbTank += 1;
+                    }));
+                    Thread.Sleep(1);
+                }
+
+                panel.Invoke(new Action(delegate ()
+                {
+                    txt.Text = "0.00";
+                    pbLbl.BackColor = Color.LightGreen;
+                    onLBL.BackColor = Color.LightYellow;
+                }));
+
+
+            }
+            Thread.Sleep(10);
         }
     }
 }

@@ -34,46 +34,52 @@ namespace WinFormsApp1
             freeDistributors = new bool[maxDistributors];
 
 
-            cars = new Car[maxCars+5];
+            cars = new Car[maxCars + 5];
             distributors = new Distributor[maxDistributors];
             cashiers = new Cash[maxCashiers];
 
             for (int i = 0; i < maxDistributors; i++)
             {
-                if ( i== 0)distributorLocations[0] = new Point(this.Width / 3, this.Height - 50);
+                if (i == 0) distributorLocations[0] = new Point(this.Width / 3, this.Height - 50);
                 else
                 {
                     distributorLocations[i] = new Point(this.Width / 3, this.Height - 50 - 150 * i);
                 }
             }
-           
+
             for (int i = 0; i < maxCashiers; i++)
             {
-                if (i == 0) cashLocations[0] = new Point(this.Width/2 + 300, this.Height - 50);
+                if (i == 0) cashLocations[0] = new Point(this.Width / 2 + 300, this.Height - 50);
                 else
                 {
-                    cashLocations[i] = new Point(this.Width/2 + 300, this.Height - 50 - 100 * i);
+                    cashLocations[i] = new Point(this.Width / 2 + 300, this.Height - 50 - 100 * i);
                 }
             }
         }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            for (int i = 0; i < maxCars+5; i++)
+            for (int i = 0; i < maxCars + 5; i++)
             {
                 cars[i].vehicle.Location = cars[i].getPoint();
             }
             textBox1.Text = "PB = " + pbCars + Environment.NewLine + "On = " + onCars + Environment.NewLine + "Cars: " + nCars + "/" + maxCars
-                + Environment.NewLine + "W: ";
+                + Environment.NewLine + "Q: ";
             for (int i = 0; i < carsInQueue.Count; i++)
             {
-                textBox1.Text += carsInQueue[i] + " ";
+                textBox1.Text += carsInQueue.ElementAt(i) + " ";
             }
-            textBox1.Text += Environment.NewLine + "O: ";
-            for (int i = 0; i < carsOut.Count; i++)
+            textBox1.Text += Environment.NewLine + "F: ";
+            for (int i = 0; i < carsRefueling.Count; i++)
             {
-                textBox1.Text += carsOut[i]+ " ";
+                textBox1.Text += carsRefueling.ElementAt(i) + " ";
             }
+            textBox1.Text += Environment.NewLine + "P: ";
+            for (int i = 0; i < carsPaying.Count; i++)
+            {
+                textBox1.Text += carsPaying.ElementAt(i) + " ";
+            }
+
 
         }
 
@@ -81,7 +87,7 @@ namespace WinFormsApp1
         {
             btnStart.Enabled = false;
             InitializeData();
-            carThreads = new Thread[maxCars+5];
+            carThreads = new Thread[maxCars + 5];
             distributorThreads = new Thread[maxDistributors];
             cashierThreads = new Thread[maxCashiers];
 
@@ -93,7 +99,7 @@ namespace WinFormsApp1
             {
                 cashiers[i] = new Cash(i, resetPanel);
             }
-            for (int i = 0; i < maxCars+5; i++)
+            for (int i = 0; i < maxCars + 5; i++)
             {
                 cars[i] = new Car(i, this, resetPanel);
             }
@@ -110,7 +116,7 @@ namespace WinFormsApp1
                 cashierThreads[i].IsBackground = true;
             }
 
-            for (int i = 0; i < maxCars+5; i++)
+            for (int i = 0; i < maxCars + 5; i++)
             {
                 carThreads[i] = new Thread(new ThreadStart(cars[i].carAction));
                 carThreads[i].IsBackground = true;

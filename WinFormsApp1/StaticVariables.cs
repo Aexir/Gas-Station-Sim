@@ -25,24 +25,32 @@ namespace WinFormsApp1
         public static int maxCashiers = 5;
         public static int maxDistributors = 5;
 
-        public static int nCars = 0; 
+        public static int nCars = 0;
 
         public static int pbCars = 0;
         public static int onCars = 0;
 
-        public static List<int> carsInQueue;
-        public static List<int> carsOut;
+        public static LinkedList<int> carsInQueue = new();
+        public static LinkedList<int> carsPaying = new();
+        public static LinkedList<int> carsRefueling = new();
 
         //SEMAPHORES
-        public static SemaphoreSlim mutex = new SemaphoreSlim(1, 1); //zliczanie samochodow 
+        public static Semaphore mutex = new(1, 1); //zliczanie samochodow 
 
         public static SemaphoreSlim[] carSem = new SemaphoreSlim[20];
-        public static SemaphoreSlim[] dstSem = new SemaphoreSlim[20];
-        public static SemaphoreSlim[] cashSem = new SemaphoreSlim[20];
+        public static SemaphoreSlim[] dstSem = new SemaphoreSlim[10];
+        public static SemaphoreSlim[] cashSem = new SemaphoreSlim[10];
 
-        public static SemaphoreSlim chosingDistributor = new SemaphoreSlim(1, 1);
-        public static SemaphoreSlim chosingChashier = new SemaphoreSlim(1, 1);
-        public static SemaphoreSlim stationEnterance = new SemaphoreSlim(1, 1);
+        public static SemaphoreSlim chosingDistributor = new(1, 1);
+        public static SemaphoreSlim chosingChashier = new(1, 1);
+        public static SemaphoreSlim refCount = new(1, 1);
+
+        public static SemaphoreSlim refuelMutex = new(1, 1);
+
+
+
+        public static SemaphoreSlim distributorEntry = new(0, 20);
+        public static SemaphoreSlim cashierEntry = new(0, 20);
 
         public static SemaphoreSlim refuelingStation = new SemaphoreSlim(1, 1);
         //INFO
@@ -59,15 +67,24 @@ namespace WinFormsApp1
         public static int[] distribCarId = new int[20];
         public static int[] cashDistribId = new int[20];
 
+        public static int[] stationForCar = new int[20];
+        public static int[] cashierForCar = new int[20];
+
+        //public static int needRef = 0;
+
+        public static bool refueling = false;
+
         public StaticVariables()
         {
             for (int i = 0; i < 20; i++)
             {
                 carSem[i] = new SemaphoreSlim(0, 20);
-                dstSem[i] = new SemaphoreSlim(0, 20);
-                cashSem[i] = new SemaphoreSlim(0, 20);
-                carsInQueue = new List<int>();
-                carsOut = new List<int>();
+            }
+
+            for (int i = 0; i < 10; i++)
+            {
+                dstSem[i] = new SemaphoreSlim(0, 10);
+                cashSem[i] = new SemaphoreSlim(0, 10);
             }
 
             for (int i = 0; i < maxDistributors; i++)
