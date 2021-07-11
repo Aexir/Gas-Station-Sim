@@ -32,13 +32,13 @@ namespace WinFormsApp1
         public static LinkedList<int> carsRefueling = new();
 
         //SEMAPHORES
-        public static SemaphoreSlim mutex = new(1, 1); //zliczanie samochodow 
+        public static SemaphoreSlim enterLeaveStation = new(1, 1); //zliczanie samochodow 
 
-        public static SemaphoreSlim[] carSem = new SemaphoreSlim[20];
+        public static SemaphoreSlim[] carSem = new SemaphoreSlim[20]; 
         public static SemaphoreSlim[] dstSem = new SemaphoreSlim[10];
         public static SemaphoreSlim[] cashSem = new SemaphoreSlim[10];
 
-        public static SemaphoreSlim chosingDistributor = new(1, 1);
+        public static SemaphoreSlim chosingDistributor = new(1, 1); 
         public static SemaphoreSlim chosingChashier = new(1, 1);
 
         public static SemaphoreSlim refCount = new(1, 1);

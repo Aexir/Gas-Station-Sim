@@ -134,9 +134,19 @@ namespace WinFormsApp1
                     needRef++;
                 }
             }
-            if (needRef >= maxDistributors / 2)
+            if (maxDistributors == 1)
             {
-                refueling = true;
+                if (needRef >= 1)
+                {
+                    refueling = true;
+                }
+            }
+            else 
+            {
+                if (needRef >= maxDistributors / 2)
+                {
+                    refueling = true;
+                }         
             }
         }
 

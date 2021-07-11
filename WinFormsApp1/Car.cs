@@ -40,17 +40,17 @@ namespace WinFormsApp1
         {
             spawnCar();
 
-            mutex.Wait();
+            enterLeaveStation.Wait();
 
             Thread.Sleep(rand.Next(500, 1000));
 
-            if (!refueling)
+            if (refueling == false)
             {
                 if (nCars < maxCars)
                 {
                     increaseCarCounter();
                     carsInQueue.AddFirst(id);
-                    mutex.Release();
+                    enterLeaveStation.Release();
 
                     moveToEnterance();
                     moveToQueue();
@@ -106,13 +106,13 @@ namespace WinFormsApp1
                 }
                 else
                 {
-                    mutex.Release();
+                    enterLeaveStation.Release();
                     move(new Point(position.X, sim.Height));
                 }
             }
             else
             {
-                mutex.Release();
+                enterLeaveStation.Release();
                 move(new Point(position.X, sim.Height));
                 if (nCars == 0)
                 {
@@ -124,8 +124,8 @@ namespace WinFormsApp1
                         freeOnDistributors[i] = true;
                         freePbDistributors[i] = true;
                     }
-                    refuelMutex.Release();
                     refueling = false;
+                    refuelMutex.Release();
                 }
             }
             carAction();
@@ -307,7 +307,7 @@ namespace WinFormsApp1
             {
                 for (int i = 0; i < maxDistributors; i++)
                 {
-                    if (!refueling)
+                    if (refueling == false)
                     {
                         if (freeDistributors[i] == true)
                         {
