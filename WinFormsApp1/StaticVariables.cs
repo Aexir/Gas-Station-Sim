@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace WinFormsApp1
 {
@@ -36,7 +32,7 @@ namespace WinFormsApp1
         public static LinkedList<int> carsRefueling = new();
 
         //SEMAPHORES
-        public static Semaphore mutex = new(1, 1); //zliczanie samochodow 
+        public static SemaphoreSlim mutex = new(1, 1); //zliczanie samochodow 
 
         public static SemaphoreSlim[] carSem = new SemaphoreSlim[20];
         public static SemaphoreSlim[] dstSem = new SemaphoreSlim[10];
@@ -53,26 +49,26 @@ namespace WinFormsApp1
         public static Point[] cashLocations;
         public static Point[] distributorLocations;
 
-        public static bool[] freeDistributors = new bool[6];
-        public static bool[] freeOnDistributors = new bool[6];
-        public static bool[] freePbDistributors = new bool[6];
+        public static bool[] freeDistributors = new bool[4];
+        public static bool[] freeOnDistributors = new bool[4];
+        public static bool[] freePbDistributors = new bool[4];
 
-        public static bool[] freeCashiers = new bool[10];
+        public static bool[] freeCashiers = new bool[6];
 
         public static int[] distribCarId = new int[20];
-        public static int[] cashDistribId = new int[20];
+        public static int[] cashDistribId = new int[10];
 
         public StaticVariables()
         {
             for (int i = 0; i < 20; i++)
             {
-                carSem[i] = new SemaphoreSlim(0, 20);
+                carSem[i] = new (0, 1);
             }
 
             for (int i = 0; i < 10; i++)
             {
-                dstSem[i] = new SemaphoreSlim(0, 10);
-                cashSem[i] = new SemaphoreSlim(0, 10);
+                dstSem[i] = new (0, 1);
+                cashSem[i] = new (0, 1);
             }
 
             for (int i = 0; i < maxDistributors; i++)

@@ -40,7 +40,10 @@ namespace WinFormsApp1
         {
             spawnCar();
 
-            mutex.WaitOne();
+            mutex.Wait();
+
+            Thread.Sleep(rand.Next(500, 1000));
+
             if (!refueling)
             {
                 if (nCars < maxCars)
@@ -56,14 +59,12 @@ namespace WinFormsApp1
                     int distrib = getDistributor();
                     if (distrib == maxDistributors)
                     {
-
                         decreaseCarCounter();
                         carsInQueue.Remove(id);
                         chosingDistributor.Release();
-
-                        drive();
-
-                    } else
+                        driveAway();
+                    }
+                    else
                     {
                         distribCarId[distrib] = id;
                         carsInQueue.Remove(id);
@@ -71,13 +72,13 @@ namespace WinFormsApp1
 
                         chosingDistributor.Release();
 
-                        moveToDistriutor(distrib);
+                        moveToDistriutor(distrib); //dojazd do dystrybutora
 
-                        dstSem[distrib].Release();
+                        dstSem[distrib].Release(); //tankowanie
 
-                        carSem[id].Wait();
+                        carSem[id].Wait(); //po tankowaniu
 
-                        chosingChashier.Wait();
+                        chosingChashier.Wait(); //
                         carsRefueling.Remove(id);
 
                         carsPaying.AddFirst(id);
@@ -96,14 +97,12 @@ namespace WinFormsApp1
                         carSem[id].Wait();
                         cashSem[cashier].Release();
                         carSem[id].Wait();
-                        move(new Point(position.X + 150, position.Y));                //wyjazd z budowy
 
-                        move(new Point(sim.Width));
+
+                        leaveStation();   //wyjazd z budowy
                         carsPaying.Remove(id);
-
-                        leaveStation();
                         decreaseCarCounter();
-                    }                    
+                    }
                 }
                 else
                 {
@@ -129,12 +128,13 @@ namespace WinFormsApp1
                     refueling = false;
                 }
             }
-            Thread.Sleep(rand.Next(500, 1000));
             carAction();
         }
 
         public void leaveStation()
         {
+            move(new Point(position.X + 150, position.Y));              
+            move(new Point(sim.Width));
             move(new Point(position.X + 100, position.Y));
         }
 
@@ -255,18 +255,17 @@ namespace WinFormsApp1
             move(new Point(position.X, sim.Height / 2));
         }
 
-        public void drive()
+        public void driveAway()
         {
-
             sim.Invoke(new Action(delegate ()
             {
                 vehicle.BackColor = Color.DarkOrange;
             }));
 
-            move(new Point(distributorLocations[1].X, distributorLocations[1].Y + 15));
+            move(new Point(distributorLocations[maxDistributors-1].X, distributorLocations[maxDistributors-1].Y + 15));
             move(new Point(position.X + 200, position.Y));
             move(new Point(position.X + 200, position.Y));
-            move(new Point(cashLocations[1].X, cashLocations[1].Y + 15));
+            move(new Point(cashLocations[maxCashiers-1].X, cashLocations[maxCashiers-1].Y + 15));
             move(new Point(position.X + 150, position.Y));
             move(new Point(sim.Width));
         }

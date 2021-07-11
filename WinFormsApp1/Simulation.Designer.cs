@@ -44,6 +44,7 @@ namespace WinFormsApp1
             // resetPanel
             // 
             this.resetPanel.AutoSize = true;
+            this.resetPanel.BackColor = System.Drawing.Color.Transparent;
             this.resetPanel.Controls.Add(this.textBox1);
             this.resetPanel.Controls.Add(this.btnStart);
             this.resetPanel.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -79,6 +80,7 @@ namespace WinFormsApp1
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1209, 561);
             this.Controls.Add(this.resetPanel);
+            this.DoubleBuffered = true;
             this.Name = "Simulation";
             this.Text = "Stacja Paliw";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.onClose);

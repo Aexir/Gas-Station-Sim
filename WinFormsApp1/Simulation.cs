@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using static WinFormsApp1.StaticVariables;
 
@@ -79,8 +73,6 @@ namespace WinFormsApp1
             {
                 textBox1.Text += carsPaying.ElementAt(i) + " ";
             }
-
-
         }
 
         private void btnStart_Click(object sender, EventArgs e)

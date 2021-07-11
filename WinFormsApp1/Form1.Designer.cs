@@ -137,6 +137,11 @@ namespace WinFormsApp1
             // numericUpDown3
             // 
             this.numericUpDown3.Location = new System.Drawing.Point(234, 45);
+            this.numericUpDown3.Maximum = new decimal(new int[] {
+            15,
+            0,
+            0,
+            0});
             this.numericUpDown3.Name = "numericUpDown3";
             this.numericUpDown3.Size = new System.Drawing.Size(100, 23);
             this.numericUpDown3.TabIndex = 10;
